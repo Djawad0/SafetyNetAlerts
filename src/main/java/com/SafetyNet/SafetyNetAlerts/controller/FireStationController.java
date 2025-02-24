@@ -1,5 +1,6 @@
 package com.SafetyNet.SafetyNetAlerts.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SafetyNet.SafetyNetAlerts.dto.FireStationDTO;
 import com.SafetyNet.SafetyNetAlerts.service.FireStationService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class FireStationController {
@@ -28,6 +31,8 @@ public class FireStationController {
 	
 	@Autowired
     private FireStationService fireStationService;
+	 @Autowired
+	    private ObjectMapper objectMapper;
 
 	
 	@GetMapping("/firestation")
@@ -112,6 +117,20 @@ public class FireStationController {
     public ResponseEntity<String> addFireStation(@RequestBody FireStationDTO fireStationDTO) throws IOException {
     	try {
             logger.debug("Start of fire station addition: {}", fireStationDTO);
+            JsonNode root = objectMapper.readTree(new File("data.json"));
+            JsonNode firestationsNode = root.get("firestations");
+            for (JsonNode firestation : firestationsNode) {
+            	boolean addressFireStation = firestation.get("address").asText().equals(fireStationDTO.getAddress());
+    			boolean stationFireStation = firestation.get("station").asText().equals(fireStationDTO.getStation());
+    			if (addressFireStation && stationFireStation) {
+    				logger.error("Error while adding fire station: This fire station already exists");
+    				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This fire station already exists.");
+    			}
+    			if (fireStationDTO.getAddress() == null || fireStationDTO.getStation() == null) {
+     				logger.error("Error while adding fire stations: address = null or station = null");
+     				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("address = null or station = null.");
+     			}
+            }
             fireStationService.addFireStation(fireStationDTO);
             logger.info("Fire station successfully added: {}", fireStationDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Fire station successfully added");  
@@ -123,11 +142,30 @@ public class FireStationController {
 
     @PutMapping("/firestations/{address}")
     public ResponseEntity<String> updateFireStation(@PathVariable String address, @RequestBody FireStationDTO fireStationDTO) throws IOException {
+    	logger.debug("Start of fire station update at address: {}", address);
     	try {
-            logger.debug("Start of fire station update at address: {}", address);
-            fireStationService.updateFireStation(address, fireStationDTO);
-            logger.info("Fire station successfully updated at: {}", address);
-            return ResponseEntity.status(HttpStatus.OK).body("Fire station successfully updated");  
+            String errorMessage = null;
+            JsonNode root = objectMapper.readTree(new File("data.json"));
+            JsonNode fireStationNode = root.get("firestations");
+            	for (JsonNode fireStation : fireStationNode) {            	
+            		boolean addressVariable = fireStation.get("address").asText().equals(address);        
+	            	boolean stationFireStation = fireStation.get("station").asText().equals(fireStationDTO.getStation());          	
+       			if (!addressVariable) {
+       				errorMessage = "This address not exists.";			
+       			}
+       			else if (stationFireStation) {
+       				logger.error("Error while update fire station: No modifications detected.");
+      	        	 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No modifications detected"); 
+       			}
+       			else if (!stationFireStation) {
+       				fireStationService.updateFireStation(address, fireStationDTO);
+       	            logger.info("Fire station successfully updated at: {}", address);
+       	            return ResponseEntity.status(HttpStatus.OK).body("Fire station successfully updated");  
+       			} 	            
+       	 }
+            
+            logger.error("Error while update fire station: This address not exists.");
+       	 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);      
         } catch (IOException e) {
             logger.error("Error updating fire station at address: {}", address, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
@@ -136,11 +174,26 @@ public class FireStationController {
 
     @DeleteMapping("/firestations/{address}")
     public ResponseEntity<String> deleteFireStation(@PathVariable String address) throws IOException {
+    	 logger.debug("Start of removal of fire station at address: {}", address);
     	try {
-            logger.debug("Start of removal of fire station at address: {}", address);
-            fireStationService.deleteFireStation(address);
-            logger.info("Fire station successfully removed at address: {}", address);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Fire station successfully removed"); 
+    		 String errorMessage = null;
+        	 JsonNode root = objectMapper.readTree(new File("data.json"));
+        	 JsonNode fireStationNode = root.get("firestations");
+        	 for (JsonNode fireStation : fireStationNode) {
+        		 boolean addressVariable = fireStation.get("address").asText().equals(address); 			
+        			if (addressVariable) {
+        				 fireStationService.deleteFireStation(address);
+        				 logger.info("Fire station successfully removed at address: {}", address);  				
+	     	            return ResponseEntity.status(HttpStatus.OK).body("Fire station successfully removed"); 
+        			} 
+        			else if (!addressVariable) {
+        				errorMessage = "This fire station not exists.";			
+        			}	            
+        	 }
+        	 logger.error("Error while delete fire station: This fire station not exists.");
+        	 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+         
+            
         } catch (IOException e) {
             logger.error("Error deleting fire station at address: {}", address, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
