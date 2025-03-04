@@ -45,7 +45,7 @@ public class MedicalRecordController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching medical records"); 
 	        }
 	    }
-
+ 
 	    @PostMapping("/medicalrecords")
 	    public ResponseEntity<String> addMedicalRecord(@RequestBody MedicalRecordDTO medicalRecordDTO) throws IOException {
 	    	 logger.debug("Attempting to add new medical record for: {}", medicalRecordDTO);
@@ -118,6 +118,7 @@ public class MedicalRecordController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating medical record"); 
 	        }
 	    }
+
 
 	    @DeleteMapping("/medicalrecords/{firstName}/{lastName}")
 	    public ResponseEntity<String> deleteMedicalRecord(@PathVariable String firstName, @PathVariable String lastName) throws IOException {

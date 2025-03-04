@@ -38,6 +38,10 @@ public class FireStationRepository {
 
 		JsonNode root = informationRepository.readFile();
 		ArrayNode fireStationsArray;
+		
+		if (!root.has("firestations")) {
+            throw new IOException("Firestations node is missing!");  
+        }
 
 		if (root.has("firestations") && root.get("firestations").isArray()) {
 		    fireStationsArray = (ArrayNode) root.get("firestations");
@@ -104,7 +108,7 @@ public class FireStationRepository {
         }
 	}
 	
-	public Object test7(List<String> station) throws IOException {
+	public List<Map<String, Object>> getAllHomesServedByStation(List<String> station) throws IOException {
 		
 		logger.debug("Fetching data for fire stations: {}", station);
 		
@@ -163,7 +167,7 @@ public class FireStationRepository {
 		return result;
 	}
 
-	public Object test8(String address) throws IOException {
+	public Object getResidentsAndTheNumberOfTheFireStationAtTheAddress(String address) throws IOException {
 		
 		 logger.debug("Fetching data for fire station at address: {}", address);
 		
@@ -222,7 +226,7 @@ public class FireStationRepository {
 		return result;
 	}
 
-	public Object test9(String station) throws IOException {
+	public List<Map<String, Object>> getTelephoneNumbersOfResidentsServedByTheFireStation(String station) throws IOException {
 		
 		logger.debug("Fetching data for fire stations: {}", station);
 		
@@ -253,7 +257,7 @@ public class FireStationRepository {
 		return result;
 	}
 
-	public Object test10(String address) throws IOException {
+	public Object getChildrenLivingAtThisAddress(String address) throws IOException {
 		
 		logger.debug("Fetching data for fire station at address: {}", address);
 		
@@ -310,70 +314,96 @@ public class FireStationRepository {
 		return result;
 	}
 
-	public Object test11(String station) throws IOException {
+	public Object getPersonsCoveredByTheFireStation(String station) throws IOException {
 		
-		logger.debug("Fetching data for fire stations: {}", station);
-		
-		JsonNode root = informationRepository.readFile();
-		JsonNode personsNode = root.get("persons");
-		JsonNode medicalRecordsNode = root.get("medicalrecords");
-		JsonNode fireStationsNode = root.get("firestations");
+		 logger.debug("Fetching data for fire stations: {}", station);
 
-		List<Map<String, Object>> result = new ArrayList<>();
-		Map<String, Object> medicalRecord = new LinkedHashMap<>();  
-		int nomberAdult = 0;
-		int nomberChild = 0;
+		    JsonNode root = informationRepository.readFile();
+		    JsonNode personsNode = root.get("persons");
+		    JsonNode medicalRecordsNode = root.get("medicalrecords");
+		    JsonNode fireStationsNode = root.get("firestations");
 
-		for (JsonNode fireStation : fireStationsNode) {
-			if (fireStation.has("station") && fireStation.get("station").asText().equals(station)) {
-				String address = fireStation.get("address").asText();
+		    if (personsNode == null || medicalRecordsNode == null || fireStationsNode == null) {
+		        logger.error("Missing data in JSON: persons={}, medicalRecords={}, fireStations={}",
+		                     personsNode, medicalRecordsNode, fireStationsNode);
+		        return new ArrayList<>(); // Retourne une liste vide pour éviter les erreurs
+		    }
 
-				for (JsonNode person : personsNode) {
+		    List<Map<String, Object>> result = new ArrayList<>();
+		    Map<String, Object> medicalRecord = new LinkedHashMap<>();  
+		    int nomberAdult = 0;
+		    int nomberChild = 0;
 
-					if (person.has("address") && person.get("address").asText().equals(address)) {
+		    for (JsonNode fireStation : fireStationsNode) {
+		        if (fireStation.has("station") && fireStation.get("station") != null && 
+		            !fireStation.get("station").isNull() && fireStation.get("station").asText().equals(station)) {
+		            
+		            if (!fireStation.has("address") || fireStation.get("address").isNull()) {
+		                logger.warn("Missing 'address' for station {}", station);
+		                continue;
+		            }
+		            String address = fireStation.get("address").asText();
+		            
+		            for (JsonNode person : personsNode) {
+		                if (!person.has("address") || person.get("address").isNull() || 
+		                    !person.get("address").asText().equals(address)) {
+		                    continue;
+		                }
 
-						String lastName = person.get("lastName").asText();
-						String firstName = person.get("firstName").asText();
-						String phone = person.get("phone").asText();
-						String addressPerson = person.get("address").asText();
+		                if (!person.has("lastName") || person.get("lastName").isNull() ||
+		                    !person.has("firstName") || person.get("firstName").isNull()) {
+		                    logger.warn("Person missing firstName or lastName: {}", person);
+		                    continue;
+		                }
 
-						Map<String, Object> persons = new LinkedHashMap<>();
-						persons.put("firstName", firstName);
-						persons.put("lastName", lastName);
-						persons.put("address", addressPerson);
-						persons.put("phone", phone);
-						result.add(persons);
+		                String lastName = person.get("lastName").asText();
+		                String firstName = person.get("firstName").asText();
+		                String phone = person.has("phone") && !person.get("phone").isNull() ? person.get("phone").asText() : "N/A";
 
-						for (JsonNode record : medicalRecordsNode) {
+		                Map<String, Object> persons = new LinkedHashMap<>();
+		                persons.put("firstName", firstName);
+		                persons.put("lastName", lastName);
+		                persons.put("address", address);
+		                persons.put("phone", phone);
+		                result.add(persons);
 
-							if (record.has("lastName") && record.get("lastName").asText().equals(lastName) &&
-									record.has("firstName") && record.get("firstName").asText().equals(firstName)) {
+		                for (JsonNode record : medicalRecordsNode) {
+		                    if (!record.has("lastName") || record.get("lastName").isNull() ||
+		                        !record.has("firstName") || record.get("firstName").isNull() ||
+		                        !record.get("lastName").asText().equals(lastName) ||
+		                        !record.get("firstName").asText().equals(firstName)) {
+		                        continue;
+		                    }
 
-								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-								LocalDate dateNaissance = LocalDate.parse(record.get("birthdate").asText(), formatter);
+		                    if (!record.has("birthdate") || record.get("birthdate").isNull()) {
+		                        logger.warn("Missing birthdate for {} {}", firstName, lastName);
+		                        continue;
+		                    }
 
-								LocalDate today = LocalDate.now();
+		                    try {
+		                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		                        LocalDate dateNaissance = LocalDate.parse(record.get("birthdate").asText(), formatter);
+		                        LocalDate today = LocalDate.now();
+		                        int age = Period.between(dateNaissance, today).getYears();
 
-								Period period = Period.between(dateNaissance, today);
+		                        if (age <= 18) {
+		                            nomberChild++;
+		                        } else {
+		                            nomberAdult++;
+		                        }
+		                    } catch (Exception e) {
+		                        logger.error("Error parsing birthdate for {} {}: {}", firstName, lastName, e.getMessage());
+		                    }
+		                }
+		            }
+		        }
+		    }
 
-								if(period.getYears() <= 18) {
-									nomberChild++;
-								}
+		    medicalRecord.put("number Adult", nomberAdult);
+		    medicalRecord.put("number Child", nomberChild);
+		    result.add(medicalRecord);
 
-								if (period.getYears() > 18) {
-									nomberAdult++;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		medicalRecord.put("nomber Adult", nomberAdult);
-		medicalRecord.put("nomber Child", nomberChild);
-		result.add(medicalRecord);
-		logger.info("Fetched data for fire stations: {}", station);
-		return result;
+		    logger.info("Fetched data for fire stations: {}", station);
+		    return result;
 	}
 }

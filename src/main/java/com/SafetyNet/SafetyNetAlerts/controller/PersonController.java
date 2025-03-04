@@ -48,10 +48,10 @@ public class PersonController {
 	    }
 	    
 	    @GetMapping("/communityEmail")
-	    public ResponseEntity<Object> test5(@RequestParam(value = "city") String city) throws IOException {
+	    public ResponseEntity<Object> getEmailOfAllCityResidents(@RequestParam(value = "city") String city) throws IOException {
 	    	logger.debug("Email recovery for the city: {}", city);
 	        try {
-	            Object emails = personService.test5(city);
+	            Object emails = personService.getEmailOfAllCityResidents(city);
 	            logger.info("The city's email search has been successfully completed: {}", city);
 	            return ResponseEntity.ok(emails); 
 	        } catch (IOException e) {
@@ -61,10 +61,10 @@ public class PersonController {
 	    }
 	    
 	    @GetMapping("/personInfo")
-	    public ResponseEntity<Object> test6(@RequestParam(name = "lastName") String lastName) throws IOException {
+	    public ResponseEntity<Object> getPersonInfo(@RequestParam(name = "lastName") String lastName) throws IOException {
 	    	logger.debug("Fetching person info for lastName: {}", lastName);
 	        try {
-	            Object personInfo = personService.test6(lastName);
+	            Object personInfo = personService.getPersonInfo(lastName);
 	            logger.info("Successfully fetched person info for lastName: {}", lastName);
 	            return ResponseEntity.ok(personInfo); 
 	        } catch (IOException e) {
@@ -94,7 +94,7 @@ public class PersonController {
         					|| personDTO.getZip() == null || personDTO.getPhone() == null || personDTO.getEmail() == null) {
 	     				logger.error("Error while adding medical record: first Name = null or last Name = null or address = null or city = null or zip = null"
 	     						+ "or phone = null or email = null");
-	     				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("first Name = null or last Name = null first Name = null or last Name = null"
+	     				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("first Name = null or last Name = null"
 	     						+ " or address = null or city = null or zip = null or phone = null or email = null.");
 	     			}
 	            }

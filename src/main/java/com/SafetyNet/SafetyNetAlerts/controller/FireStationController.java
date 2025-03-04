@@ -36,10 +36,10 @@ public class FireStationController {
 
 	
 	@GetMapping("/firestation")
-    public ResponseEntity<Object> test11(@RequestParam(value = "stationNumber") String station) throws IOException {
+    public ResponseEntity<Object> getPersonsCoveredByTheFireStation(@RequestParam(value = "stationNumber") String station) throws IOException {
 		 try {
 			 logger.debug("Start call for list of people covered by fire station corresponding for the station: {}", station);
-			 Object result = fireStationService.test11(station);
+			 Object result = fireStationService.getPersonsCoveredByTheFireStation(station);
 	            logger.info("Successful response for the station: {}", station);
 	            return ResponseEntity.ok(result);
 	        } catch (IOException e) {
@@ -49,10 +49,10 @@ public class FireStationController {
     }
 	
 	@GetMapping("/childAlert")
-    public ResponseEntity<Object> test10(@RequestParam(value = "address") String address) throws IOException {
+    public ResponseEntity<Object> getChildrenLivingAtThisAddress(@RequestParam(value = "address") String address) throws IOException {
 		try {
             logger.debug("Start call to retrieve resident list for address: {}", address);
-            Object result = fireStationService.test10(address);
+            Object result = fireStationService.getChildrenLivingAtThisAddress(address);
             logger.info("Successful response for the address: {}", address);
             return ResponseEntity.ok(result); 
         } catch (IOException e) {
@@ -62,10 +62,10 @@ public class FireStationController {
     }
 	
 	@GetMapping("/phoneAlert")
-    public ResponseEntity<Object> test9(@RequestParam(value = "firestation") String station) throws IOException {
+    public ResponseEntity<Object> getTelephoneNumbersOfResidentsServedByTheFireStation(@RequestParam(value = "firestation") String station) throws IOException {
 		try {
             logger.debug("Start call to retrieve phone list for station: {}", station);
-            Object result = fireStationService.test9(station);
+            Object result = fireStationService.getTelephoneNumbersOfResidentsServedByTheFireStation(station);
             logger.info("Successful response for the station: {}", station);
             return ResponseEntity.ok(result); 
         } catch (IOException e) {
@@ -75,10 +75,10 @@ public class FireStationController {
     }
 	
 	@GetMapping("/fire")
-    public ResponseEntity<Object> test8(@RequestParam(value = "address") String address) throws IOException {
+    public ResponseEntity<Object> getResidentsAndTheNumberOfTheFireStationAtTheAddress(@RequestParam(value = "address") String address) throws IOException {
 		try {
             logger.debug("Start of call for list of residents and fire station number for address: {}", address);
-            Object result = fireStationService.test8(address);
+            Object result = fireStationService.getResidentsAndTheNumberOfTheFireStationAtTheAddress(address);
             logger.info("Successful response for the address: {}", address);
             return ResponseEntity.ok(result); 
         } catch (IOException e) {
@@ -88,10 +88,10 @@ public class FireStationController {
     }
 	
 	@GetMapping("/flood/stations")
-    public ResponseEntity<Object> test7(@RequestParam(value = "stations") List<String> station) throws IOException {
+    public ResponseEntity<Object> getAllHomesServedByStation(@RequestParam(value = "stations") List<String> station) throws IOException {
 		 try {
 	            logger.debug("Start the call to retrieve the list of all households served by the fire station for the stations: {}", station);
-	            Object result = fireStationService.test7(station);
+	            Object result = fireStationService.getAllHomesServedByStation(station);
 	            logger.info("Successful response for the stations: {}", station);
 	            return ResponseEntity.ok(result); 
 	        } catch (IOException e) {

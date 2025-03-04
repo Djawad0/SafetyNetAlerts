@@ -30,8 +30,16 @@ public class MedicalRecordsRepository {
 		logger.debug("Tentative d'ajout d'un nouveau dossier médical : {}", medicalRecords);
 		try {
 		JsonNode root = informationRepository.readFile();
+		
+		
 
 		ArrayNode medicalRecordsArray;
+		
+		 JsonNode medicalRecordsNode = root.get("medicalrecords");
+		 
+		    if (medicalRecordsNode == null || !medicalRecordsNode.isArray()) {
+		        throw new IOException("No medical records node found");
+		    }
 
 		if (root.has("medicalrecords") && root.get("medicalrecords").isArray()) {
 			medicalRecordsArray = (ArrayNode) root.get("medicalrecords");

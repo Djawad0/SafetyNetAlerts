@@ -38,12 +38,12 @@ public class PersonService {
 	    	personsRepository.deletePersons(firstName, lastName);
 	    }
 	    
-	    public Object test5(String city) throws IOException {
-			return personsRepository.test5(city);    	
+	    public Object getEmailOfAllCityResidents(String city) throws IOException {
+			return personsRepository.getEmailOfAllCityResidents(city);    	
 	    }
 	    
-	    public Object test6(String lastName) throws IOException {
-			return personsRepository.test6(lastName);
+	    public Object getPersonInfo(String lastName) throws IOException {
+			return personsRepository.getPersonInfo(lastName);
 	    	
 	    }
 }

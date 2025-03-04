@@ -36,28 +36,28 @@ public class FireStationService {
 	    	fireStationRepository.deleteFirestations(address);
 	    }
 	    
-	    public Object test7(List<String> station) throws IOException {
-			return fireStationRepository.test7(station);
+	    public Object getAllHomesServedByStation(List<String> station) throws IOException {
+			return fireStationRepository.getAllHomesServedByStation(station);
 	    	
 	    }
 	    
-	    public Object test8(String address) throws IOException {
-			return fireStationRepository.test8(address);
+	    public Object getResidentsAndTheNumberOfTheFireStationAtTheAddress(String address) throws IOException {
+			return fireStationRepository.getResidentsAndTheNumberOfTheFireStationAtTheAddress(address);
 	    	
 	    }
 	    
-	    public Object test9(String station) throws IOException {
-			return fireStationRepository.test9(station);
+	    public Object getTelephoneNumbersOfResidentsServedByTheFireStation(String station) throws IOException {
+			return fireStationRepository.getTelephoneNumbersOfResidentsServedByTheFireStation(station);
 	    	
 	    }
 	    
-	    public Object test10(String address) throws IOException {
-			return fireStationRepository.test10(address);
+	    public Object getChildrenLivingAtThisAddress(String address) throws IOException {
+			return fireStationRepository.getChildrenLivingAtThisAddress(address);
 	    	
 	    }
 	    
-	    public Object test11(String station) throws IOException {
-			return fireStationRepository.test11(station);
+	    public Object getPersonsCoveredByTheFireStation(String station) throws IOException {
+			return fireStationRepository.getPersonsCoveredByTheFireStation(station);
 	    	
 	    }
 }

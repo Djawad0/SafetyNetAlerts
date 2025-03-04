@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -106,7 +107,7 @@ public class PersonsRepository {
         }
 	}
 	
-	public Object test5(String city) throws IOException {
+	public Object getEmailOfAllCityResidents(String city) throws IOException {
 		logger.debug("Recherche des personnes dans la ville : {}", city);
 		 try {
 		JsonNode root = informationRepository.readFile();  
@@ -128,13 +129,18 @@ public class PersonsRepository {
 	        }
 	}
 
-	public Object test6(String lastName) throws IOException {
+	public Object getPersonInfo(String lastName) throws IOException {
 		
 		logger.debug("Recherche des informations médicales pour le nom de famille : {}", lastName);
 		try {
 		JsonNode root = informationRepository.readFile();
 		JsonNode personsNode = root.get("persons");
 		JsonNode medicalRecordsNode = root.get("medicalrecords");
+		
+		 if (personsNode == null || medicalRecordsNode == null) {
+	            logger.error("Les nœuds personsNode ou medicalRecordsNode sont nuls.");
+	            return Collections.emptyList(); // ou lève une exception selon la logique de ton application
+	        }
 
 		List<Map<String, Object>> result = new ArrayList<>();
 
