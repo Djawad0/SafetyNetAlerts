@@ -12,27 +12,27 @@ import com.SafetyNet.SafetyNetAlerts.repository.MedicalRecordsRepository;
 
 @Service
 public class MedicalRecordService {
-	
-	  @Autowired
-	    private InformationRepository informationRepository;
-	  @Autowired
-	    private MedicalRecordsRepository medicalRecordsRepository;
 
-	    public Object getAllMedicalRecords() throws IOException {
-	         return informationRepository.readMedicalRecords();
-	    }
+	@Autowired
+	private InformationRepository informationRepository;
+	@Autowired
+	private MedicalRecordsRepository medicalRecordsRepository;
 
-	    public void addMedicalRecord(MedicalRecordDTO medicalRecordDTO) throws IOException {
-	        MedicalRecords record = new MedicalRecords(medicalRecordDTO.getFirstName(), medicalRecordDTO.getLastName(),
-	                medicalRecordDTO.getBirthdate(), medicalRecordDTO.getMedications(), medicalRecordDTO.getAllergies());
-	        medicalRecordsRepository.addMedicalRecords(record);
-	    }
+	public Object getAllMedicalRecords() throws IOException {
+		return informationRepository.readMedicalRecords();
+	}
 
-	    public void updateMedicalRecord(String firstName, String lastName, MedicalRecordDTO medicalRecordDTO) throws IOException {
-	    	medicalRecordsRepository.updateMedicalrecords(firstName, lastName, medicalRecordDTO);
-	    }
+	public void addMedicalRecord(MedicalRecordDTO medicalRecordDTO) throws IOException {
+		MedicalRecords record = new MedicalRecords(medicalRecordDTO.getFirstName(), medicalRecordDTO.getLastName(),
+				medicalRecordDTO.getBirthdate(), medicalRecordDTO.getMedications(), medicalRecordDTO.getAllergies());
+		medicalRecordsRepository.addMedicalRecords(record);
+	}
 
-	    public void deleteMedicalRecord(String firstName, String lastName) throws IOException {
-	    	medicalRecordsRepository.deleteMedicalrecords(firstName, lastName);
-	    }
+	public void updateMedicalRecord(String firstName, String lastName, MedicalRecordDTO medicalRecordDTO) throws IOException {
+		medicalRecordsRepository.updateMedicalrecords(firstName, lastName, medicalRecordDTO);
+	}
+
+	public void deleteMedicalRecord(String firstName, String lastName) throws IOException {
+		medicalRecordsRepository.deleteMedicalrecords(firstName, lastName);
+	}
 }

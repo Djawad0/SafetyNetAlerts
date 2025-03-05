@@ -19,144 +19,144 @@ import java.util.Map;
 
 @SpringBootTest
 class InformationRepositoryTest {
-	
+
 
 	@Mock
-    private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private InformationRepository informationRepository;
+	@InjectMocks
+	private InformationRepository informationRepository;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    public void testReadFile_Success() throws IOException {
-       
-        JsonNode mockJsonNode = mock(JsonNode.class);
-        when(objectMapper.readTree(any(File.class))).thenReturn(mockJsonNode);
+	@Test
+	public void testReadFile_Success() throws IOException {
 
-       
-        JsonNode result = informationRepository.readFile();
+		JsonNode mockJsonNode = mock(JsonNode.class);
+		when(objectMapper.readTree(any(File.class))).thenReturn(mockJsonNode);
 
-       
-        assertNotNull(result);
-        verify(objectMapper, times(1)).readTree(any(File.class));
-    }
 
-    @Test
-    public void testReadFile_Failure() throws IOException {
-       
-        when(objectMapper.readTree(any(File.class))).thenThrow(new IOException("File not found"));
+		JsonNode result = informationRepository.readFile();
 
-        
-        JsonNode result = informationRepository.readFile();
 
-       
-        assertNull(result);
-        verify(objectMapper, times(1)).readTree(any(File.class));
-    }
+		assertNotNull(result);
+		verify(objectMapper, times(1)).readTree(any(File.class));
+	}
 
-    @Test
-    public void testWriteFile() throws IOException {
-       
-        JsonNode mockJsonNode = mock(JsonNode.class);
+	@Test
+	public void testReadFile_Failure() throws IOException {
 
-       
-        informationRepository.writeFile(mockJsonNode);
+		when(objectMapper.readTree(any(File.class))).thenThrow(new IOException("File not found"));
 
-       
-        verify(objectMapper, times(1)).writeValue(any(File.class), eq(mockJsonNode));
-    }
 
-    @Test
-    public void testReadPersons_Success() throws IOException {
-        
-        Map<String, Object> mockMap = mock(Map.class);
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
-        when(mockMap.get("persons")).thenReturn(new Object());
+		JsonNode result = informationRepository.readFile();
 
-        
-        Object result = informationRepository.readPersons();
 
-        
-        assertNotNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
+		assertNull(result);
+		verify(objectMapper, times(1)).readTree(any(File.class));
+	}
 
-    @Test
-    public void testReadPersons_Failure() throws IOException {
-        
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
-            .thenThrow(new IOException("Error reading persons data"));
+	@Test
+	public void testWriteFile() throws IOException {
 
-      
-        Object result = informationRepository.readPersons();
+		JsonNode mockJsonNode = mock(JsonNode.class);
 
-        
-        assertNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
 
-    @Test
-    public void testReadMedicalRecords_Success() throws IOException {
-       
-        Map<String, Object> mockMap = mock(Map.class);
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
-        when(mockMap.get("medicalrecords")).thenReturn(new Object());
+		informationRepository.writeFile(mockJsonNode);
 
-        
-        Object result = informationRepository.readMedicalRecords();
 
-        
-        assertNotNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
+		verify(objectMapper, times(1)).writeValue(any(File.class), eq(mockJsonNode));
+	}
 
-    @Test
-    public void testReadMedicalRecords_Failure() throws IOException {
-       
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
-            .thenThrow(new IOException("Error reading medical records data"));
+	@Test
+	public void testReadPersons_Success() throws IOException {
 
-        
-        Object result = informationRepository.readMedicalRecords();
+		Map<String, Object> mockMap = mock(Map.class);
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
+		when(mockMap.get("persons")).thenReturn(new Object());
 
-        
-        assertNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
 
-    @Test
-    public void testReadFirestations_Success() throws IOException {
-        
-        Map<String, Object> mockMap = mock(Map.class);
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
-        when(mockMap.get("firestations")).thenReturn(new Object());
+		Object result = informationRepository.readPersons();
 
-       
-        Object result = informationRepository.readFirestations();
 
-        
-        assertNotNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
+		assertNotNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
 
-    @Test
-    public void testReadFirestations_Failure() throws IOException {
-       
-        when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
-            .thenThrow(new IOException("Error reading firestations data"));
+	@Test
+	public void testReadPersons_Failure() throws IOException {
 
-        
-        Object result = informationRepository.readFirestations();
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
+		.thenThrow(new IOException("Error reading persons data"));
 
-       
-        assertNull(result);
-        verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
-    }
-	
+
+		Object result = informationRepository.readPersons();
+
+
+		assertNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
+
+	@Test
+	public void testReadMedicalRecords_Success() throws IOException {
+
+		Map<String, Object> mockMap = mock(Map.class);
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
+		when(mockMap.get("medicalrecords")).thenReturn(new Object());
+
+
+		Object result = informationRepository.readMedicalRecords();
+
+
+		assertNotNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
+
+	@Test
+	public void testReadMedicalRecords_Failure() throws IOException {
+
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
+		.thenThrow(new IOException("Error reading medical records data"));
+
+
+		Object result = informationRepository.readMedicalRecords();
+
+
+		assertNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
+
+	@Test
+	public void testReadFirestations_Success() throws IOException {
+
+		Map<String, Object> mockMap = mock(Map.class);
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class))).thenReturn(mockMap);
+		when(mockMap.get("firestations")).thenReturn(new Object());
+
+
+		Object result = informationRepository.readFirestations();
+
+
+		assertNotNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
+
+	@Test
+	public void testReadFirestations_Failure() throws IOException {
+
+		when(objectMapper.readValue(any(File.class), any(TypeReference.class)))
+		.thenThrow(new IOException("Error reading firestations data"));
+
+
+		Object result = informationRepository.readFirestations();
+
+
+		assertNull(result);
+		verify(objectMapper, times(1)).readValue(any(File.class), any(TypeReference.class));
+	}
+
 
 }
